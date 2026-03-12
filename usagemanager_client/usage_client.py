@@ -52,6 +52,31 @@ class UsageManagerClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def record_usage_batch(
+        self,
+        company: str,
+        users_data: dict,
+    ) -> dict:
+        """
+        Record a batch of usage entries using the legacy nested users_data shape.
+        Returns:
+        {
+            "status": "ok",
+            "monthly_total": float,
+            "usage_limit": float | None,
+            "limit_exceeded": bool | None,
+            "records_processed": int | None
+        }
+        """
+        payload = {
+            "app_name": self._app_name,
+            "company": company,
+            "users_data": users_data,
+        }
+        resp = await self._client.post("/usage/record/batch", json=payload)
+        resp.raise_for_status()
+        return resp.json()
+
     async def get_company_monthly_usage(
         self,
         company: str,
