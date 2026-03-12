@@ -59,13 +59,14 @@ class UsageManagerClient:
         month: Optional[int] = None,
     ) -> dict:
         """
-        Get company monthly usage with per-app breakdown. Returns:
+        Get company monthly usage with per-app and per-profile breakdowns. Returns:
         {
             "company": str,
             "year": int,
             "month": int,
             "total_cost": float,
-            "per_app": [{"app_name": str, "total_cost": float}]
+            "per_app": [{"app_name": str, "total_cost": float}],
+            "per_profile": [{"profile_name": str, "total_cost": float}]
         }
         """
         params = {}
@@ -87,14 +88,15 @@ class UsageManagerClient:
         month: Optional[int] = None,
     ) -> dict:
         """
-        Get user monthly usage with per-app breakdown. Returns:
+        Get user monthly usage with per-app and per-profile breakdowns. Returns:
         {
             "company": str,
             "user_email": str,
             "year": int,
             "month": int,
             "total_cost": float,
-            "per_app": [{"app_name": str, "total_cost": float}]
+            "per_app": [{"app_name": str, "total_cost": float}],
+            "per_profile": [{"profile_name": str, "total_cost": float}]
         }
         """
         params = {}
@@ -105,6 +107,51 @@ class UsageManagerClient:
         resp = await self._client.get(
             f"/usage/company/{company}/user/{user_email}/monthly", params=params
         )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_detailed_monthly_usage(
+        self,
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        company: Optional[str] = None,
+    ) -> dict:
+        """
+        Get a detailed monthly usage report across all companies or one company.
+        Returns:
+        {
+            "year": int,
+            "month": int,
+            "total_cost": float,
+            "companies": [
+                {
+                    "company": str,
+                    "total_cost": float,
+                    "per_app": [{"app_name": str, "total_cost": float}],
+                    "per_department": [{"department": str, "total_cost": float}],
+                    "per_profile": [{"profile_name": str, "total_cost": float}],
+                    "users": [
+                        {
+                            "user_email": str,
+                            "department": str | None,
+                            "jobtitle": str | None,
+                            "total_cost": float,
+                            "per_app": [{"app_name": str, "total_cost": float}],
+                            "per_profile": [{"profile_name": str, "total_cost": float}]
+                        }
+                    ]
+                }
+            ]
+        }
+        """
+        params = {}
+        if year is not None:
+            params["year"] = year
+        if month is not None:
+            params["month"] = month
+        if company is not None:
+            params["company"] = company
+        resp = await self._client.get("/usage/monthly/detailed", params=params)
         resp.raise_for_status()
         return resp.json()
 
