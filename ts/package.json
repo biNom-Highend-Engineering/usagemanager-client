@@ -1,0 +1,21 @@
+{
+  "name": "usagemanager-client",
+  "version": "1.1.0",
+  "description": "Client SDK for the centralized Usage Manager service",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
